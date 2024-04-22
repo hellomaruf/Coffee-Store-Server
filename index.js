@@ -50,6 +50,38 @@ async function run() {
       const result = await coffeeCollection.deleteOne(query);
       res.send(result);
     });
+
+    app.get("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.findOne(query);
+      res.send(result);
+    });
+
+    // Update a coffee
+    app.put("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const coffee = req.body;
+      const updateCoffee = {
+        $set: {
+          coffeeName: coffee.coffeeName,
+          chef: coffee.chef,
+          supplier: coffee.supplier,
+          teste: coffee.teste,
+          category: coffee.category,
+          details: coffee.details,
+          photo: coffee.photo,
+        },
+      };
+      const result = await coffeeCollection.updateOne(
+        filter,
+        updateCoffee,
+        options
+      );
+      res.send(result);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
